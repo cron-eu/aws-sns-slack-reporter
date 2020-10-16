@@ -1,12 +1,22 @@
 {
-  "Type": "Notification",
-  "MessageId": "feab6c2d-7ac6-56c0-9122-342ed5903280",
-  "TopicArn": "arn:aws:sns:eu-central-1:326290035538:davshop-www-prod-errors",
-  "Subject": "ALARM: \"davshop-www-5xx-errors\" in EU (Frankfurt)",
-  "Message": "{\"AlarmName\":\"davshop-www-5xx-errors\",\"AlarmDescription\":\"Load Balancer 5xx HTTP Error Count exceeded\",\"AWSAccountId\":\"326290035538\",\"NewStateValue\":\"ALARM\",\"NewStateReason\":\"Threshold Crossed: 1 out of the last 1 datapoints [54.0 (16/10/20 14:16:00)] was greater than the threshold (30.0) (minimum 1 datapoint for OK -> ALARM transition).\",\"StateChangeTime\":\"2020-10-16T14:24:22.341+0000\",\"Region\":\"EU (Frankfurt)\",\"AlarmArn\":\"arn:aws:cloudwatch:eu-central-1:326290035538:alarm:davshop-www-5xx-errors\",\"OldStateValue\":\"OK\",\"Trigger\":{\"MetricName\":\"HTTPCode_Target_5XX_Count\",\"Namespace\":\"AWS/ApplicationELB\",\"StatisticType\":\"Statistic\",\"Statistic\":\"SUM\",\"Unit\":null,\"Dimensions\":[{\"value\":\"app/dav-shop-prod/93c42f833742e447\",\"name\":\"LoadBalancer\"}],\"Period\":300,\"EvaluationPeriods\":1,\"ComparisonOperator\":\"GreaterThanThreshold\",\"Threshold\":30.0,\"TreatMissingData\":\"- TreatMissingData:                    notBreaching\",\"EvaluateLowSampleCountPercentile\":\"\"}}",
-  "Timestamp": "2020-10-16T14:24:22.392Z",
-  "SignatureVersion": "1",
-  "Signature": "KifOKDumR1pOoVwmHpp+HGhmlA6MlP4lTHo2bXaOx/YgGUJUB4Hq5sAlncdlCef1AtS3y39GP4zUGOqtIHyWu0j6+Er7/le9s0GOo8FtS9i0gKqXTFb+PibO+6RFm4GarhTig196ah10pgvKMvS8GQvTkcR69zWwVs6P4E5WKzGCu/DsM5FAoQL3lNCY/do+OtlbJtlKIA+097CV86NLLaH9QX//+tMAD0l8p5Iil5RcvMta/Jb8tDKJPK2v0dmLrknuj/E803DIk86ppTm5309/xBk0oYmtQEi0WvB9i6zX/0uu2cnL8aV0WEnQ9MrLwtXUviIIsilfr7KSOeK2mQ==",
-  "SigningCertURL": "https://sns.eu-central-1.amazonaws.com/SimpleNotificationService-a86cb10b4e1f29c941702d737128f7b6.pem",
-  "UnsubscribeURL": "https://sns.eu-central-1.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:eu-central-1:326290035538:davshop-www-prod-errors:af7bb9e9-335c-42ba-a3d8-2a5519833a9c"
+  "Records": [
+    {
+      "EventSource": "aws:sns",
+      "EventSubscriptionArn": "arn:aws:sns:eu-central-1:326290035538:davshop-www-prod-errors:75d5f61f-44f6-4f79-a99a-d449bfc36dd5",
+      "EventVersion": "1.0",
+      "Sns": {
+        "Message": "{\"\"AlarmName\"\":\"\"davshop-www-5xx-errors\"\",\"\"AlarmDescription\"\":\"\"Load Balancer 5xx HTTP Error Count exceeded\"\",\"\"AWSAccountId\"\":\"\"326290035538\"\",\"\"NewStateValue\"\":\"\"ALARM\"\",\"\"NewStateReason\"\":\"\"Threshold Crossed: 1 out of the last 1 datapoints [153.0 (16/10/20 15:17:00)] was greater than the threshold (30.0) (minimum 1 datapoint for OK -> ALARM transition).\"\",\"\"StateChangeTime\"\":\"\"2020-10-16T15:25:22.345+0000\"\",\"\"Region\"\":\"\"EU (Frankfurt)\"\",\"\"AlarmArn\"\":\"\"arn:aws:cloudwatch:eu-central-1:326290035538:alarm:davshop-www-5xx-errors\"\",\"\"OldStateValue\"\":\"\"OK\"\",\"\"Trigger\"\":{\"\"MetricName\"\":\"\"HTTPCode_Target_5XX_Count\"\",\"\"Namespace\"\":\"\"AWS/ApplicationELB\"\",\"\"StatisticType\"\":\"\"Statistic\"\",\"\"Statistic\"\":\"\"SUM\"\",\"\"Unit\"\":null,\"\"Dimensions\"\":[{\"\"value\"\":\"\"app/dav-shop-prod/93c42f833742e447\"\",\"\"name\"\":\"\"LoadBalancer\"\"}],\"\"Period\"\":300,\"\"EvaluationPeriods\"\":1,\"\"ComparisonOperator\"\":\"\"GreaterThanThreshold\"\",\"\"Threshold\"\":30.0,\"\"TreatMissingData\"\":\"\"TreatMissingData: notBreaching\"\",\"\"EvaluateLowSampleCountPercentile\"\":\"\"\"\"}}",
+        "MessageAttributes": {},
+        "MessageId": "fdf3087a-a563-510a-8154-507918c11d89",
+        "Signature": "AD1c2Ooop/Wgd2GCKZHk1DFbdQw299Q5UiIdPMhqHamdrUJs71VWvVIEb/0rMTg8q4G4joba8OdHQFZcKjQnAK/+3qisL3lGUzTtlWhvcqw+Q7RaN+3YLIS8RxEqlsTDIsaiZKJFIQJ+jDgL9YpuoW5o1M81+HnrFyC+44X51OGKSJpQ2CwJlHwrKo+ArbwHWR4oTpN8pwsDJhpa1TroDu96b4DAUIvwm73MMM71RfzNn/rt1Pk7qer+3EEaDsXTAX4F3BIfRUmLU5EOS8/dnKejBXgdFER+Zpo+8D24BFGAJbiY14qm6+JEGrWHhAiOg0CTDCdO9baiGw7PDAG/LA==",
+        "SignatureVersion": "1",
+        "SigningCertUrl": "https://sns.eu-central-1.amazonaws.com/SimpleNotificationService-a86cb10b4e1f29c941702d737128f7b6.pem",
+        "Subject": "ALARM: \"\"davshop-www-5xx-errors\"\" in EU (Frankfurt)",
+        "Timestamp": "2020-10-16T15:25:22.393Z",
+        "TopicArn": "arn:aws:sns:eu-central-1:326290035538:davshop-www-prod-errors",
+        "Type": "Notification",
+        "UnsubscribeUrl": "https://sns.eu-central-1.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:eu-central-1:326290035538:davshop-www-prod-errors:75d5f61f-44f6-4f79-a99a-d449bfc36dd5"
+      }
+    }
+  ]
 }
