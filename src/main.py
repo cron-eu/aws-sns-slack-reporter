@@ -15,9 +15,27 @@ session = boto3.Session()
 
 def process_event(data):
     """
-    Process a single ECS Event
+    Process the full SNS Queue Subscription Payload
 
-    :param data: ECS Event data
+    :param data: payload
+    :return: True if at least one message has been processed successfully
+    """
+
+    success = False
+
+    for record in data['Records']:
+        sns = record['Sns']
+        if process_message(sns):
+            success = True
+
+    return success
+
+
+def process_message(sns):
+    """
+    Process a single SNS Event
+
+    :param sns: ECS Event data
     :return: True if a notification was sent.
     """
 
@@ -28,55 +46,52 @@ def process_event(data):
     def get_date_with_tz(string):
         return datetime.datetime.strptime(string, '%Y-%m-%dT%H:%M:%S.%f%z')
 
-    for record in data['Records']:
-        sns = record['Sns']
+    timestamp = get_utc_json_date(sns['Timestamp'])
+    message = json.loads(sns['Message'])
 
-        timestamp = get_utc_json_date(sns['Timestamp'])
-        message = json.loads(sns['Message'])
+    try:
+        alarm_name = message['AlarmName']
+        alarm_description = message['AlarmDescription']
 
-        try:
-            alarm_name = message['AlarmName']
-            alarm_description = message['AlarmDescription']
+        state = message['NewStateValue']
+        state_reason = message['NewStateReason']
 
-            state = message['NewStateValue']
-            state_reason = message['NewStateReason']
+        state_change_time = get_date_with_tz(message['StateChangeTime'])
 
-            state_change_time = get_date_with_tz(message['StateChangeTime'])
+        is_alarm = state == 'ALARM'
 
-            is_alarm = state == 'ALARM'
+        send_slack_message({
+            'attachments': [
+                {
+                    'color': '#00c000' if is_alarm else '#c00000',
+                    'pretext': ("{}" if is_alarm else "@here {}").format(state),
+                    'title': alarm_name,
+                    'fields': [
+                        {
+                            'title': 'Alarm Description',
+                            'value': alarm_description,
+                            'short': False,
+                        },
+                        {
+                            'title': 'State Reason',
+                            'value': state_reason,
+                            'short': False,
+                        },
+                        {
+                            'title': 'State Change Time',
+                            'value': state_change_time.strftime("%a, %d %b %Y %H:%M:%S"),
+                            'short': True,
+                        }
+                    ],
+                    'footer': 'SNS Event',
+                    'ts': timestamp.timestamp(),
+                }
+            ]
+        })
 
-            send_slack_message({
-                'attachments': [
-                    {
-                        'color': '#00c000' if is_alarm else '#c00000',
-                        'pretext': ("{}" if is_alarm else "@here {}").format(state),
-                        'title': alarm_name,
-                        'fields': [
-                            {
-                                'title': 'Alarm Description',
-                                'value': alarm_description,
-                                'short': False,
-                            },
-                            {
-                                'title': 'State Reason',
-                                'value': state_reason,
-                                'short': False,
-                            },
-                            {
-                                'title': 'State Change Time',
-                                'value': state_change_time.strftime("%a, %d %b %Y %H:%M:%S"),
-                                'short': True,
-                            }
-                        ],
-                        'footer': 'SNS Event',
-                        'ts': timestamp.timestamp(),
-                    }
-                ]
-            })
-
-        except KeyError:
-            print('ERROR: invalid message payload format: {}'.format(json.dumps(message)))
-            pass
+    except KeyError:
+        print('ERROR: invalid message payload format: {}'.format(json.dumps(message)))
+        pass
 
     return True
 
@@ -104,7 +119,7 @@ def lambda_handler(event, context):
 
 def cli_handler():
     import sys
-    process_event(json.loads(sys.stdin.read()))
+    process_message(json.loads(sys.stdin.read()))
 
 
 if __name__ == '__main__':
