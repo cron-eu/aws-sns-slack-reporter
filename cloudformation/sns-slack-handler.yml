@@ -1,0 +1,75 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Send AWS SNS notifications via Slack"
+
+Parameters:
+  LambdaS3Bucket:
+    Type: String
+    Description: S3 Bucket where the associated lambda artifacts are stored
+    Default: "cron-aws-sns-slack-reporter"
+  LambdaVersion:
+    Type: String
+    Description: Version of the lambda function to use
+    Default: "0.0.1"
+  StackWebhookURL:
+    Type: String
+    Description: Slack Webhook URL
+  SNSTopic:
+    Type: String
+    Description: SNSTopics to subscribe
+
+Resources:
+  # all lambda functions need execution roles to grant the function the
+  # necessary permissions it needs during execution.
+  #
+  # Additionally to the stock AWS Policy (so the task can log to CloudWatch) we do need
+  # some additional permissions to be able to get the cloudwatch logs of the stopped task.
+  #
+  LambdaExecutionRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: !Sub lambda-exec-role-for-${AWS::StackName}
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      ManagedPolicyArns:
+        # a stock AWS policy that includes Cloudwatch Logs and S3 access
+        - arn:aws:iam::aws:policy/AWSLambdaExecute
+
+  LambdaFunction:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Code:
+        S3Bucket: !Ref LambdaS3Bucket
+        S3Key: !Sub "lambda-${LambdaVersion}.zip"
+      Description: !Sub "Send SNS Messages to Slack for stack ${AWS::StackName}"
+      FunctionName: !Ref AWS::StackName
+      Handler: "main.lambda_handler"
+      Environment:
+        Variables:
+          SLACK_WEBHOOK_URL: !Ref StackWebhookURL
+      MemorySize: 128
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Runtime:  python3.8
+      Timeout: 30
+
+  LambdaInvokePermission:
+    Type: "AWS::Lambda::Permission"
+    Properties:
+      FunctionName: !GetAtt LambdaFunction.Arn
+      Action: "lambda:InvokeFunction"
+      Principal: "sns.amazonaws.com"
+      SourceArn: !Sub arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${SNSTopic}
+
+  SNSSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Endpoint: !GetAtt LambdaFunction.Arn
+      Protocol: lambda
+      TopicArn: !Sub arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${SNSTopic}
