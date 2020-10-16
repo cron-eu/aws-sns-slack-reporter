@@ -44,7 +44,8 @@ def process_message(sns):
         return datetime.datetime.strptime(string, '%Y-%m-%dT%H:%M:%S.%fZ').astimezone(tz)
 
     def get_date_with_tz(string):
-        return datetime.datetime.strptime(string, '%Y-%m-%dT%H:%M:%S.%f%z')
+        tz = dateutil.tz.gettz('Europe/Berlin')
+        return datetime.datetime.strptime(string, '%Y-%m-%dT%H:%M:%S.%f%z').astimezone(tz)
 
     timestamp = get_utc_json_date(sns['Timestamp'])
     message = json.loads(sns['Message'])
@@ -63,25 +64,35 @@ def process_message(sns):
         send_slack_message({
             'attachments': [
                 {
-                    'color': '#00c000' if is_alarm else '#c00000',
-                    'pretext': ("{}" if is_alarm else "@here {}").format(state),
-                    'title': alarm_name,
+                    'color': '#c00000' if is_alarm else '#00c000',
+                    'pretext': ("{}" if is_alarm else "@here {}").format(alarm_description),
+                    'title': state,
                     'fields': [
-                        {
-                            'title': 'Alarm Description',
-                            'value': alarm_description,
-                            'short': False,
-                        },
                         {
                             'title': 'State Reason',
                             'value': state_reason,
                             'short': False,
                         },
                         {
+                            'title': 'Alarm Name',
+                            'value': alarm_name,
+                            'short': True,
+                        },
+                        {
                             'title': 'State Change Time',
                             'value': state_change_time.strftime("%a, %d %b %Y %H:%M:%S"),
                             'short': True,
-                        }
+                        },
+                        {
+                            'title': 'Region',
+                            'value': message['Region'],
+                            'short': True,
+                        },
+                        {
+                            'title': 'AWS Account ID',
+                            'value': message['AWSAccountId'],
+                            'short': True,
+                        },
                     ],
                     'footer': 'SNS Event',
                     'ts': timestamp.timestamp(),
