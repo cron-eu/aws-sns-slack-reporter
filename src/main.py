@@ -65,7 +65,7 @@ def process_message(sns):
             'attachments': [
                 {
                     'color': '#c00000' if is_alarm else '#00c000',
-                    'pretext': ("{}" if is_alarm else "@here {}").format(alarm_description),
+                    'pretext': ("@here {}" if is_alarm else "{}").format(alarm_description),
                     'title': state,
                     'fields': [
                         {
