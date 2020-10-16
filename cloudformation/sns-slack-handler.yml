@@ -10,7 +10,7 @@ Parameters:
   LambdaVersion:
     Type: String
     Description: Version of the lambda function to use
-    Default: "0.0.1"
+    Default: "1.0.0"
   StackWebhookURL:
     Type: String
     Description: Slack Webhook URL
