@@ -21,14 +21,17 @@ def process_event(data):
     :return: True if a notification was sent.
     """
 
-    def get_json_date(string):
+    def get_utc_json_date(string):
         tz = dateutil.tz.gettz('Europe/Berlin')
         return datetime.datetime.strptime(string, '%Y-%m-%dT%H:%M:%S.%fZ').astimezone(tz)
+
+    def get_date_with_tz(string):
+        return datetime.datetime.strptime(string, '%Y-%m-%dT%H:%M:%S.%f%z')
 
     for record in data['Records']:
         sns = record['Sns']
 
-        timestamp = get_json_date(sns['Timestamp'])
+        timestamp = get_utc_json_date(sns['Timestamp'])
         message = json.loads(sns['Message'])
 
         try:
@@ -38,7 +41,7 @@ def process_event(data):
             state = message['NewStateValue']
             state_reason = message['NewStateReason']
 
-            state_change_time = get_json_date(message['StateChangeTime'])
+            state_change_time = get_date_with_tz(message['StateChangeTime'])
 
             is_alarm = state == 'ALARM'
 
