@@ -147,7 +147,7 @@ def get_alarms(process_all=False):
     client = session.client('cloudwatch')
     response = client.describe_alarms()
 
-    return [alarm for alarm in response['MetricAlarms'] if process_all or alarm['StateValue'] is 'ALARM']
+    return [alarm for alarm in response['MetricAlarms'] if process_all or alarm['StateValue'] == 'ALARM']
 
 
 def list_alarms(process_all=False):
