@@ -8,6 +8,11 @@ This provides a lambda script which subscribes to an existing SNS Queue and send
 
 The Setup can be done via CloudFormation, a publicly accessible CloudFormation Template is also provided.
 
+### New in v1.1.0+
+
+All alarms in the ALARM state will also be reported **on a scheduled basis** (defaults every 30 minutes,
+configurable).
+
 
 Setup
 ----
