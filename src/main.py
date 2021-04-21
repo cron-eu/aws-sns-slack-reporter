@@ -15,7 +15,7 @@ http = urllib3.PoolManager()
 session = boto3.Session()
 
 
-def process_event(data):
+def process_sns_event(data):
     """
     Process the full SNS Queue Subscription Payload
 
@@ -132,10 +132,10 @@ def send_slack_message(payload):
 def lambda_handler(event, context):
     global session
 
-    if event['source'] == 'aws.events':
+    if 'source' in event and event['source'] == 'aws.events':
         processed = send_notifications()
     else:
-        processed = process_event(event)
+        processed = process_sns_event(event)
 
     return {
         'message': 'Slack Notification was sent successfully.' if processed else 'No Slack Notification was sent.'
