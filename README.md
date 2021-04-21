@@ -16,7 +16,7 @@ Create a new Slack Custom Integration and use the Slack Webhook URL to create th
 
 ```bash
 SLACK_WEBHOOK_URL=https://hooks.slack.com/services/XXX/XXX/XXX
-SNS_TOPIC=davshop-www-prod-errors
+SNS_TOPIC=Default_CloudWatch_Alarms_Topic
 
 aws cloudformation create-stack --stack-name sns-slack-handler \
   --template-url https://cron-aws-sns-slack-reporter.s3.eu-central-1.amazonaws.com/sns-slack-handler.yml \
