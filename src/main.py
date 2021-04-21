@@ -131,7 +131,11 @@ def send_slack_message(payload):
 # noinspection PyUnusedLocal
 def lambda_handler(event, context):
     global session
-    processed = process_event(event)
+
+    if event['source'] == 'aws.events':
+        processed = send_notifications()
+    else:
+        processed = process_event(event)
 
     return {
         'message': 'Slack Notification was sent successfully.' if processed else 'No Slack Notification was sent.'
@@ -167,8 +171,10 @@ def list_alarms(process_all=False):
 def send_notifications(process_all=False):
     """
     Send a notification to Slack which contains all alarms currently in an ALARM state
-    :return:
+    :return: True if at least one notification was sent
     """
+
+    notification_was_sent = False
     for alarm in get_alarms(process_all):
         alarm = Alarm(name=alarm['AlarmName'],
                       description=alarm['AlarmDescription'],
@@ -177,6 +183,9 @@ def send_notifications(process_all=False):
                       state_change_time=alarm['StateUpdatedTimestamp']
                       )
         send_slack_alarm(alarm, datetime.datetime.now())
+        notification_was_sent = True
+
+    return notification_was_sent
 
 
 def cli_handler():
