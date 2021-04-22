@@ -40,6 +40,25 @@ aws cloudformation update-stack --stack-name sns-slack-handler \
   ParameterKey=StackWebhookURL,UsePreviousValue=true ParameterKey=SNSTopic,UsePreviousValue=true
 ```
 
+### Advanced Configuration
+
+To change the default Slack Message Prefix, used when posting an alarm in ALARM state, use the Parameter `SlackAlarmPrefix`
+when creating/updating the stack:
+
+```shell
+  --parameters \
+  (..)
+  ParameterKey=SlackAlarmPrefix,ParameterValue="@channel"
+```
+
+To tweak the time interval used to re-send notifications for alarms in the ALARM state, use the `AlertRate` parameter.
+
+```shell
+  --parameters \
+  (..)
+  ParameterKey=AlertRate,ParameterValue="rate (2 hours)"
+```
+
 Termination
 ----
 

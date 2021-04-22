@@ -21,6 +21,10 @@ Parameters:
     Type: String
     Description: Send Slack Notifications for Alarms in ALARM state using this scheduled rate
     Default: "rate(30 minutes)"
+  SlackAlarmPrefix:
+    Type: String
+    Description: A Prefix to prepend to all Slack notifications if the associated alarm is in the ALARM state
+    Default: "@here"
 
 Resources:
   # all lambda functions need execution roles to grant the function the
@@ -69,6 +73,7 @@ Resources:
       Environment:
         Variables:
           SLACK_WEBHOOK_URL: !Ref StackWebhookURL
+          SLACK_ALARM_PREFIX: !Ref SlackAlarmPrefix
       MemorySize: 128
       Role: !GetAtt LambdaExecutionRole.Arn
       Runtime:  python3.8

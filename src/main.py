@@ -52,12 +52,13 @@ def send_slack_alarm(alarm: Alarm, timestamp):
     berlin = dateutil.tz.gettz('Europe/Berlin')
 
     is_alarm = alarm.state == 'ALARM'
+    alarm_prefix = os.environ['SLACK_ALARM_PREFIX']
 
     send_slack_message({
         'attachments': [
             {
                 'color': '#c00000' if is_alarm else '#00c000',
-                'pretext': ("@here {}" if is_alarm else "{}").format(alarm.description),
+                'pretext': ("{} ".format(alarm_prefix) if is_alarm and alarm_prefix else '') + alarm.description,
                 'title': alarm.state,
                 'fields': [
                     {
