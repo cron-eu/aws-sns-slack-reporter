@@ -24,7 +24,8 @@ Parameters:
   SlackAlarmPrefix:
     Type: String
     Description: A Prefix to prepend to all Slack notifications if the associated alarm is in the ALARM state
-    Default: "@here"
+    # see https://slack.com/intl/en-de/help/articles/202009646-Notify-a-channel-or-workspace
+    Default: "<!channel>"
 
 Resources:
   # all lambda functions need execution roles to grant the function the
