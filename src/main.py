@@ -176,7 +176,16 @@ def send_notifications(process_all=False):
     """
 
     notification_was_sent = False
-    for alarm in get_alarms(process_all):
+
+    alarms = get_alarms(process_all)
+
+    topic_arn = os.environ['SNS_TOPIC_ARN']
+
+    # filter out any alarms not being wired up with "our" SNS topic
+    if topic_arn and not process_all:
+        alarms = [ alarm for alarm in alarms if topic_arn in alarm['AlarmActions'] ]
+
+    for alarm in alarms:
         alarm = Alarm(name=alarm['AlarmName'],
                       description=alarm['AlarmDescription'],
                       reason=alarm['StateReason'],

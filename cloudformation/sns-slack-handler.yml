@@ -74,6 +74,7 @@ Resources:
         Variables:
           SLACK_WEBHOOK_URL: !Ref StackWebhookURL
           SLACK_ALARM_PREFIX: !Ref SlackAlarmPrefix
+          SNS_TOPIC_ARN: !Sub arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${SNSTopic}
       MemorySize: 128
       Role: !GetAtt LambdaExecutionRole.Arn
       Runtime:  python3.8
