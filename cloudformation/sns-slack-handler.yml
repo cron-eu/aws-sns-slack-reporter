@@ -10,13 +10,22 @@ Parameters:
   LambdaVersion:
     Type: String
     Description: Version of the lambda function to use
-    Default: "1.0.1"
+    Default: "1.1.0"
   StackWebhookURL:
     Type: String
     Description: Slack Webhook URL
   SNSTopic:
     Type: String
     Description: SNSTopics to subscribe
+  AlertRate:
+    Type: String
+    Description: Send Slack Notifications for Alarms in ALARM state using this scheduled rate
+    Default: "rate(30 minutes)"
+  SlackAlarmPrefix:
+    Type: String
+    Description: A Prefix to prepend to all Slack notifications if the associated alarm is in the ALARM state
+    # see https://slack.com/intl/en-de/help/articles/202009646-Notify-a-channel-or-workspace
+    Default: "<!channel>"
 
 Resources:
   # all lambda functions need execution roles to grant the function the
@@ -41,6 +50,17 @@ Resources:
       ManagedPolicyArns:
         # a stock AWS policy that includes Cloudwatch Logs and S3 access
         - arn:aws:iam::aws:policy/AWSLambdaExecute
+      Path: /
+      Policies:
+        - PolicyName: "DescribeCloudWatchAlarms"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: AllowDescribeAlarms
+                Effect: "Allow"
+                Action:
+                  - "cloudwatch:DescribeAlarms"
+                Resource: "*"
 
   LambdaFunction:
     Type: "AWS::Lambda::Function"
@@ -54,6 +74,8 @@ Resources:
       Environment:
         Variables:
           SLACK_WEBHOOK_URL: !Ref StackWebhookURL
+          SLACK_ALARM_PREFIX: !Ref SlackAlarmPrefix
+          SNS_TOPIC_ARN: !Sub arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${SNSTopic}
       MemorySize: 128
       Role: !GetAtt LambdaExecutionRole.Arn
       Runtime:  python3.8
@@ -73,3 +95,23 @@ Resources:
       Endpoint: !GetAtt LambdaFunction.Arn
       Protocol: lambda
       TopicArn: !Sub arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${SNSTopic}
+
+  # create a schedule to run the lambda function periodically
+  ScheduledAlertsRule:
+    Type: "AWS::Events::Rule"
+    Properties:
+      Description: "ScheduledRule to send alerts periodically"
+      ScheduleExpression: !Ref AlertRate
+      State: "ENABLED"
+      Targets:
+        - Arn: !GetAtt LambdaFunction.Arn
+          Id: TargetFunctionV1
+
+  # give events service permission to invoke function based on schedule
+  ScheduledLambdaPermission:
+    Type: "AWS::Lambda::Permission"
+    Properties:
+      FunctionName: !GetAtt LambdaFunction.Arn
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn: !GetAtt ScheduledAlertsRule.Arn
